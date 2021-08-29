@@ -10,7 +10,7 @@ defined('ABSPATH') or die("No script kiddies please!");
  * 
  * Version: 1.0.0
  * Author: NullCorps
- * Author URI: https://github.com/Nullcorps
+ * Author URI: 
  * Text Domain:
  * Domain Path:
  * Network:
