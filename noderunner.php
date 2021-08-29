@@ -189,6 +189,9 @@ function noderunner_links_to_here($atts,$content = null)
    
    $out .= "</ul>";
    
+   
+   if ( count($nr) == 0 )
+      { $out .= "[none yet]"; }
    //$out .= print_r($u, true) . $nl;
 
    return do_Shortcode($out);
@@ -220,8 +223,15 @@ function noderunner_create_a_link($atts,$content = null)
    {
    global $nl;
    
-   $out = "";
-   $out .= "<style>
+   
+   $user_id = get_current_user_id();
+   
+   $is_admin = nr_user_has_role($user_id, "administrator");
+   
+   if ( $is_admin )
+      {   
+      $out = "";
+      $out .= "<style>
 .nr-add-link-select
 {
 aborder: 1px solid red;
@@ -230,21 +240,17 @@ height: 30px;
    
 </style>";
    
-   
-   $out .= "<h4>Noderunner create a link:</h4>";
-   $this_post = get_the_ID();
-   //$out .= "This post: " . $this_post . $nl;
-   
-   
-   
-   $link_from = "";
-   $link_to = "";
-   $user_id = get_current_user_id();
-   
-   $is_admin = nr_user_has_role($user_id, "administrator");
-   
-   if ( $is_admin )
-      {
+    
+      $out .= "<h4>Noderunner create a link:</h4>";
+      $this_post = get_the_ID();
+      //$out .= "This post: " . $this_post . $nl;
+    
+    
+    
+      $link_from = "";
+      $link_to = "";
+    
+
       //$out .= "is_admin" . $nl . $nl;
       if ( isset($_POST['nr_create_link_from']) )
          {
@@ -285,94 +291,95 @@ height: 30px;
             }
          }
       
+
+   
+   
+      
+      $out .= "Link from: ";
+      $out .= "<a href=\"#\" onclick=\"document.getElementById('nr_create_link_from').value=" . $this_post . "; return false;\">";
+      $out .= "[this page: " . $this_post . "]" . $nl;
+      $out .= "</a>";
+      
+      $args = array( 'numberposts' => 20 );
+   
+      $posts = get_pages($args);
+      $out .= "<select id=nr_pages_from class=\"nr-add-link-select\" onchange=\"document.getElementById('nr_create_link_from').value=this[this.selectedIndex].value;\">";
+      $out .= "<option>- Select a page -</option>";
+      foreach ( $posts as $post )
+         {
+         //$out .= $post->post_title . $nl;
+         $out .= "<option value=" . $post->ID . " >" . $post->post_title . "</option>";
+         }
+      $out .= "</select>";
+   
+   
+      $posts = get_posts($args);
+      $out .= "<select id=nr_posts_from class=\"nr-add-link-select\" onchange=\"document.getElementById('nr_create_link_from').value=this[this.selectedIndex].value;\">";
+      $out .= "<option>- Select a post -</option>";
+      foreach ( $posts as $post )
+         {
+         //$out .= $post->post_title . $nl;
+         $out .= "<option value=" . $post->ID . " >" . $post->post_title . "</option>";
+         }
+      $out .= "</select>";
+      
+      
+      
+      $out .= $nl . $nl;
+      
+      $out .= "Link to: ";
+      $out .= "<a href=\"#\" onclick=\"document.getElementById('nr_create_link_to').value=" . $this_post . "; return false;\">";
+      $out .= "[this page: " . $this_post . "]";
+      $out .= "</a>" . $nl;
+      
+      $args = array( 'numberposts' => 20 );
+   
+      $posts = get_pages($args);
+      $out .= "<select id=nr_pages_to class=\"nr-add-link-select\" onchange=\"document.getElementById('nr_create_link_to').value=this[this.selectedIndex].value;\">";
+      $out .= "<option>- Select a page -</option>";
+      foreach ( $posts as $post )
+         {
+         //$out .= $post->post_title . $nl;
+         $out .= "<option value=" . $post->ID . " >" . $post->post_title . "</option>";
+         }
+      $out .= "</select>";
+   
+      $posts = get_posts($args);
+      $out .= "<select id=nr_posts_to class=\"nr-add-link-select\" onchange=\"document.getElementById('nr_create_link_to').value=this[this.selectedIndex].value;\">";
+      $out .= "<option>- Select a post -</option>";
+      foreach ( $posts as $post )
+         {
+         //$out .= $post->post_title . $nl;
+         $out .= "<option value=" . $post->ID . " >" . $post->post_title . "</option>";
+         }
+      $out .= "</select>";
+   
+   
+
+   
+   
+   
+      $out .= "<div style=\"margin-top: 12px; \">";
+      $out .= "<form method=post id=nr_create_link>";
+      $out .= "From: <input style=\"display: inline; width: 60px; height: 30px;\" type=text name=nr_create_link_from id=nr_create_link_from size=4> ";
+      $out .= "To: <input style=\"display: inline; width: 60px; height: 30px;\" type=text name=nr_create_link_to id=nr_create_link_to size=4> ";
+      $out .= "&nbsp; <input type=submit value=\"Add link\">";
+      $out .= "</div>";
+      $out .= "</form>";
+      
+      
+      $out .= $nl;
+      //$out .= "So basically for now what we need is a pair of textboxes ";
+      //$out .= "to say what page/post to link from/to. Then have dropdowns ";
+      //$out .= "for posts, and pages (for the source), and then another ";
+      //$out .= "set of dropdowns for the post/page it's linking to";
+      
+      //$out .= "I wonder if one could have a sort of basic [noderunner] tag ";
+      //$out .= "which one could put in a page/node if there wasn't any actual content ";
+      //$out .= "but you could use it as a sort of 'menu/contents' thing which ";
+      //$out .= "is auto-generated by the links to/from that node";
+      //$out .= "(perhaps hide the nav widgets in that case so not doubling up?";
       }
-   
-   
-   
-   $out .= "Link from: ";
-   $out .= "<a href=\"#\" onclick=\"document.getElementById('nr_create_link_from').value=" . $this_post . "; return false;\">";
-   $out .= "[this page: " . $this_post . "]" . $nl;
-   $out .= "</a>";
-   
-   $args = array( 'numberposts' => 20 );
-
-   $posts = get_pages($args);
-   $out .= "<select id=nr_pages_from class=\"nr-add-link-select\" onchange=\"document.getElementById('nr_create_link_from').value=this[this.selectedIndex].value;\">";
-   $out .= "<option>- Select a page -</option>";
-   foreach ( $posts as $post )
-      {
-      //$out .= $post->post_title . $nl;
-      $out .= "<option value=" . $post->ID . " >" . $post->post_title . "</option>";
-      }
-   $out .= "</select>";
-
-
-   $posts = get_posts($args);
-   $out .= "<select id=nr_posts_from class=\"nr-add-link-select\" onchange=\"document.getElementById('nr_create_link_from').value=this[this.selectedIndex].value;\">";
-   $out .= "<option>- Select a post -</option>";
-   foreach ( $posts as $post )
-      {
-      //$out .= $post->post_title . $nl;
-      $out .= "<option value=" . $post->ID . " >" . $post->post_title . "</option>";
-      }
-   $out .= "</select>";
-   
-   
-   
-   $out .= $nl . $nl;
-   
-   $out .= "Link to: ";
-   $out .= "<a href=\"#\" onclick=\"document.getElementById('nr_create_link_to').value=" . $this_post . "; return false;\">";
-   $out .= "[this page: " . $this_post . "]";
-   $out .= "</a>" . $nl;
-   
-   $args = array( 'numberposts' => 20 );
-
-   $posts = get_pages($args);
-   $out .= "<select id=nr_pages_to class=\"nr-add-link-select\" onchange=\"document.getElementById('nr_create_link_to').value=this[this.selectedIndex].value;\">";
-   $out .= "<option>- Select a page -</option>";
-   foreach ( $posts as $post )
-      {
-      //$out .= $post->post_title . $nl;
-      $out .= "<option value=" . $post->ID . " >" . $post->post_title . "</option>";
-      }
-   $out .= "</select>";
-
-   $posts = get_posts($args);
-   $out .= "<select id=nr_posts_to class=\"nr-add-link-select\" onchange=\"document.getElementById('nr_create_link_to').value=this[this.selectedIndex].value;\">";
-   $out .= "<option>- Select a post -</option>";
-   foreach ( $posts as $post )
-      {
-      //$out .= $post->post_title . $nl;
-      $out .= "<option value=" . $post->ID . " >" . $post->post_title . "</option>";
-      }
-   $out .= "</select>";
-   
-   
-
-   
-   
-   
-   $out .= "<div style=\"margin-top: 12px; \">";
-   $out .= "<form method=post id=nr_create_link>";
-   $out .= "From: <input style=\"display: inline; width: 60px; height: 30px;\" type=text name=nr_create_link_from id=nr_create_link_from size=4> ";
-   $out .= "To: <input style=\"display: inline; width: 60px; height: 30px;\" type=text name=nr_create_link_to id=nr_create_link_to size=4> ";
-   $out .= "&nbsp; <input type=submit value=\"Add link\">";
-   $out .= "</div>";
-   $out .= "</form>";
-   
-   
-   $out .= $nl;
-   //$out .= "So basically for now what we need is a pair of textboxes ";
-   //$out .= "to say what page/post to link from/to. Then have dropdowns ";
-   //$out .= "for posts, and pages (for the source), and then another ";
-   //$out .= "set of dropdowns for the post/page it's linking to";
-   
-   //$out .= "I wonder if one could have a sort of basic [noderunner] tag ";
-   //$out .= "which one could put in a page/node if there wasn't any actual content ";
-   //$out .= "but you could use it as a sort of 'menu/contents' thing which ";
-   //$out .= "is auto-generated by the links to/from that node";
-   //$out .= "(perhaps hide the nav widgets in that case so not doubling up?";
    return do_Shortcode($out);
    }
 
