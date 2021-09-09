@@ -117,21 +117,53 @@ add_shortcode('noderunner_links_from_here','noderunner_links_from_here');
 function noderunner_links_from_here($atts,$content = null)
    {
    global $nl;
-  
+   $has_posts = have_posts();
+   //$out .= "has_posts: " . $has_posts;
    
-   $post_id = get_the_ID();
+   if ( $has_posts )
+      {
+      $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
+      $post_id = $recent_posts[0]['ID'];
+      }
+   else
+      {
+      $post_id = get_the_ID();
+      }
    //$out .= "Post id: " . $post_id . $nl;
    
+   
+   
    //$nr = get_post_meta( $post_id, "noderunner" );
-   $nr = noderunner_get_meta_values5($post_id, "page");
+   $nrpage = noderunner_get_meta_values5($post_id, "page");
+   
+   $nrpost = noderunner_get_meta_values5($post_id, "post");
+   
+   //$out .= print_r($nrpost);
+   $nr = array();
+   
+   foreach ( $nrpage as $key=>$value )
+      {
+      $nr[$key] = $value;
+      //$out .= $key . ": " . $value . $nl;
+      }
+
+   foreach ( $nrpost as $key=>$value )
+     {
+     $nr[$key] = $value;
+     //$out .= $key . ": " . $value . $nl;
+     }
+    
+   
+   //$nr = $nrpost;
    
    
+   //$nr = $nrpost;
    //$out .= "Reading postmeta: " . print_r($nr, true) . $nl;
-   $out = "<h4>Noderunner links from here:</h4>\n"; // . $nl;
+   $out .= "<h4>Noderunner links from here:</h4>\n"; // . $nl;
    
    if ( is_array($nr) )
       {
-       //$out .= "It's an array" . $nl;
+      //$out .= "It's an array" . $nl;
       //$out .= "Count: " . count($nr);
       if (count($nr) > 0 )
          {
@@ -156,6 +188,11 @@ function noderunner_links_from_here($atts,$content = null)
          {
          $out .= "[none yet]";
          }
+      $out .= "<div style=\"text-align: right;\">";
+      $out .= "<a href=\"#\" onclick=\"location.href='" . get_page_link() . "';\">";
+      $out .= "&circlearrowleft;";
+      $out .= "</a>";
+      $out .= "</div>";
       }
    return do_Shortcode($out);
    }
@@ -170,8 +207,23 @@ function noderunner_links_to_here($atts,$content = null)
    global $nl;
    $out = "<h4>Noderunner links to here:</h4>\n"; // . $nl;
    
-   $this_post = get_the_ID();
+   //$this_post = get_the_ID();
    //$out .= "This post: " . $this_post . $nl;
+   global $nl;
+   $has_posts = have_posts();
+   //$out .= "has_posts: " . $has_posts . $nl;
+   
+   if ( $has_posts )
+      {
+      $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
+      $this_post = $recent_posts[0]['ID'];
+      }
+   else
+      {
+      $this_post = get_the_ID();
+      }
+   //$out .= "Post id: " . $this_post . $nl;
+   
    
    $nr = noderunner_get_meta_values6( $this_post, "page" );
    
@@ -209,6 +261,12 @@ function noderunner_links_to_here($atts,$content = null)
       { $out .= "[none yet]"; }
    //$out .= print_r($u, true) . $nl;
 
+   $out .= "<div style=\"text-align: right;\">";
+   $out .= "<a href=\"#\" onclick=\"location.href='" . get_page_link() . "';\">";
+   $out .= "&circlearrowleft;";
+   $out .= "</a>";
+   $out .= "</div>";
+   
    return do_Shortcode($out);
    }
 
@@ -257,9 +315,23 @@ height: 30px;
    
     
       $out .= "<h4>Noderunner create a link:</h4>";
-      $this_post = get_the_ID();
+      //$this_post = get_the_ID();
       //$out .= "This post: " . $this_post . $nl;
-    
+      
+      
+      $has_posts = have_posts();
+      //$out .= "has_posts: " . $has_posts . $nl;
+      
+      if ( $has_posts )
+         {
+         $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
+         $this_post = $recent_posts[0]['ID'];
+         }
+      else
+         {
+         $this_post = get_the_ID();
+         }
+      //$out .= "Post id: " . $this_post . $nl;
     
     
       $link_from = "";
