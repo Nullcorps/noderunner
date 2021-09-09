@@ -225,7 +225,27 @@ function noderunner_links_to_here($atts,$content = null)
    //$out .= "Post id: " . $this_post . $nl;
    
    
-   $nr = noderunner_get_meta_values6( $this_post, "page" );
+   //$nr = noderunner_get_meta_values6( $this_post, "page" );
+   
+   $nrpage = noderunner_get_meta_values6($post_id, "page");
+   
+   $nrpost = noderunner_get_meta_values6($post_id, "post");
+   
+   //$out .= print_r($nrpost);
+   $nr = array();
+   
+   foreach ( $nrpage as $key=>$value )
+      {
+      $nr[$key] = $value;
+      //$out .= $key . ": " . $value . $nl;
+      }
+
+   foreach ( $nrpost as $key=>$value )
+     {
+     $nr[$key] = $value;
+     //$out .= $key . ": " . $value . $nl;
+     }
+    
    
    //$out .= print_r($nr, true) . $nl;
    //$out .= "NR_ALL: " . print_r($nr_all, true) . $nl;
