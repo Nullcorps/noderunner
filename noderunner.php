@@ -117,7 +117,7 @@ add_shortcode('noderunner_links_from_here','noderunner_links_from_here');
 function noderunner_links_from_here($atts,$content = null)
    {
    global $nl;
-   $out = "<h4>Noderunner links from here:</h4>\n"; // . $nl;
+  
    
    $post_id = get_the_ID();
    //$out .= "Post id: " . $post_id . $nl;
@@ -127,21 +127,36 @@ function noderunner_links_from_here($atts,$content = null)
    
    
    //$out .= "Reading postmeta: " . print_r($nr, true) . $nl;
-   $out .= "<ul>";
+   $out = "<h4>Noderunner links from here:</h4>\n"; // . $nl;
    
-   foreach ($nr as $key=>$value)
+   if ( is_array($nr) )
       {
-      //$out .= "link to: " . $key . $nl;
-      $post = get_post($key, "object");
-      
-      $url = get_permalink($key);
-      $out .= "<li><a href=\"" . $url . "\">";
-      $out .= $post->post_title . $nl;
-      $out .= "</a></li>";
+       //$out .= "It's an array" . $nl;
+      //$out .= "Count: " . count($nr);
+      if (count($nr) > 0 )
+         {
+         //$out .= "got here";
+         
+         $out .= "<ul>";
+         
+         foreach ($nr as $key=>$value)
+            {
+            //$out .= "link to: " . $key . $nl;
+            $post = get_post($key, "object");
+            
+            $url = get_permalink($key);
+            $out .= "<li><a href=\"" . $url . "\">";
+            $out .= $post->post_title . $nl;
+            $out .= "</a></li>";
+            }
+         
+         $out .= "</ul>";
+         }
+      else
+         {
+         $out .= "[none yet]";
+         }
       }
-   
-   $out .= "</ul>";
-   
    return do_Shortcode($out);
    }
 
@@ -361,8 +376,8 @@ height: 30px;
    
       $out .= "<div style=\"margin-top: 12px; \">";
       $out .= "<form method=post id=nr_create_link>";
-      $out .= "From: <input style=\"display: inline; width: 60px; height: 30px;\" type=text name=nr_create_link_from id=nr_create_link_from size=4> ";
-      $out .= "To: <input style=\"display: inline; width: 60px; height: 30px;\" type=text name=nr_create_link_to id=nr_create_link_to size=4> ";
+      $out .= "From: <input style=\"display: inline; width: 70px; height: 30px;\" type=text name=nr_create_link_from id=nr_create_link_from size=4> ";
+      $out .= "To: <input style=\"display: inline; width: 70px; height: 30px;\" type=text name=nr_create_link_to id=nr_create_link_to size=4> ";
       $out .= "&nbsp; <input type=submit value=\"Add link\">";
       $out .= "</div>";
       $out .= "</form>";
