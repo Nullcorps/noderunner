@@ -131,7 +131,7 @@ function noderunner_links_from_here($atts,$content = null)
       {
       $post_id = get_the_ID();
       }
-   //$out .= "Post id: " . $post_id . $nl;
+   $out .= "Post id: " . $post_id . $nl;
    
    
    
@@ -239,7 +239,7 @@ function noderunner_links_to_here($atts,$content = null)
    
    $nrpost = noderunner_get_meta_values6($post_id, "post");
    
-   //$out .= print_r($nrpost);
+   //$out .= print_r($nrpost, true) . $nl;
    $nr = array();
    
    foreach ( $nrpage as $key=>$value )
@@ -261,7 +261,7 @@ function noderunner_links_to_here($atts,$content = null)
      }
     
    
-   //$out .= print_r($nr, true) . $nl;
+   //$out .= "nr_merged: " . print_r($nr, true) . $nl;
    //$out .= "NR_ALL: " . print_r($nr_all, true) . $nl;
    ////$out .= $nl . implode( '<br />', $nr_all );
    //$out .= $nl; 
@@ -281,7 +281,8 @@ function noderunner_links_to_here($atts,$content = null)
       {
       //$out .= "link to: " . $key . $nl;
       $post = get_post($value, "object");
-      
+      //$out .= "key: " . $key . $nl;
+      //$out .= "value: " . $value . $nl;
       $url = get_permalink($value);
       $out .= "<li><a href=\"" . $url . "\">";
       $out .= $post->post_title . $nl;
