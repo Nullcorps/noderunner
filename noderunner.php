@@ -116,10 +116,12 @@ function noderunner_read_test($atts,$content = null)
 add_shortcode('noderunner_links_from_here','noderunner_links_from_here');
 function noderunner_links_from_here($atts,$content = null)
    {
+   
    global $nl;
    $has_posts = have_posts();
    //$out .= "has_posts: " . $has_posts;
-   
+  
+  
    if ( $has_posts )
       {
       $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
@@ -143,14 +145,20 @@ function noderunner_links_from_here($atts,$content = null)
    
    foreach ( $nrpage as $key=>$value )
       {
-      $nr[$key] = $value;
-      //$out .= $key . ": " . $value . $nl;
+      if ( !isset( $nr[$key] ) )
+         {
+         $nr[$key] = $value;
+         //$out .= $key . ": " . $value . $nl;
+         }
       }
 
    foreach ( $nrpost as $key=>$value )
      {
-     $nr[$key] = $value;
-     //$out .= $key . ": " . $value . $nl;
+     if ( !isset( $nr[$key] ) )
+        {
+        $nr[$key] = $value;
+        //$out .= $key . ": " . $value . $nl;
+        }
      }
     
    
@@ -236,14 +244,20 @@ function noderunner_links_to_here($atts,$content = null)
    
    foreach ( $nrpage as $key=>$value )
       {
-      $nr[$key] = $value;
-      //$out .= $key . ": " . $value . $nl;
+      if ( !isset( $nr[$key] ) )
+         {
+         $nr[$key] = $value;
+         //$out .= $key . ": " . $value . $nl;
+         }
       }
 
    foreach ( $nrpost as $key=>$value )
      {
-     $nr[$key] = $value;
-     //$out .= $key . ": " . $value . $nl;
+     if ( !isset( $nr[$key] ) )
+        {
+        $nr[$key] = $value;
+        //$out .= $key . ": " . $value . $nl;
+        }
      }
     
    
