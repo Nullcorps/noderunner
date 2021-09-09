@@ -279,6 +279,7 @@ function noderunner_links_to_here($atts,$content = null)
    //   }
  
    $out .= "<ul>";
+   $done_the_thing = false;
    
    foreach ($nr as $key=>$value)
       {
@@ -293,13 +294,14 @@ function noderunner_links_to_here($atts,$content = null)
          $out .= "<li><a href=\"" . $url . "\">";
          $out .= $post->post_title . $nl;
          $out .= "</a></li>";
+         $done_the_thing = true;
          }
       }
    
    $out .= "</ul>";
    
    
-   if ( count($nr) == 0 )
+   if ( count($nr) == 0 || !$done_the_thing )
       { $out .= "[none yet]"; }
    //$out .= print_r($u, true) . $nl;
 
