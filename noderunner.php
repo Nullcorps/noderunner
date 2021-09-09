@@ -133,7 +133,7 @@ function noderunner_links_from_here($atts,$content = null)
       {
       $post_id = get_the_ID();
       }
-   //$out .= "Post id: " . $post_id . $nl;
+   $out .= "Post id: " . $post_id . $nl;
    
    
    
@@ -142,26 +142,28 @@ function noderunner_links_from_here($atts,$content = null)
    
    $nrpost = noderunner_get_meta_values5($post_id, "post");
    
-   //$out .= print_r($nrpost);
+   //$out .= "NRPOST:" . $nl . print_r($nrpost, true) . $nl;
+   //$out .= "NRPAGE:" . $nl . print_r($nrpost, true) . $nl;
+   
+   
+   
    $nr = array();
+   
+   $cnt = 0;
    
    foreach ( $nrpage as $key=>$value )
       {
-      if ( !isset( $nr[$key] ) )
-         {
-         $nr[$key] = $value;
-         $out .= $key . " -> " . $value . $nl;
-         }
+      $nr[$cnt] = $value;
+      $out .= $key . " -> " . $value . $nl;
+      $cnt++;
       }
 
    foreach ( $nrpost as $key=>$value )
-     {
-     if ( !isset( $nr[$key] ) )
-        {
-        $nr[$key] = $value;
-        $out .= $key . " -> " . $value . $nl;
-        }
-     }
+      {
+      $nr[$cnt] = $value;
+      $out .= $key . " -> " . $value . $nl;
+      $cnt++;
+      }
     
    
    //$nr = $nrpost;
@@ -618,6 +620,7 @@ function noderunner_get_meta_values5( $post_id, $type = 'post', $status = 'publi
     
     
     //echo "IN HERE" . $nl;
+    //echo "POST ID: " . $post_id . $nl;
     
     $sql = "
         SELECT pm.post_id FROM {$wpdb->postmeta} pm
@@ -637,7 +640,8 @@ function noderunner_get_meta_values5( $post_id, $type = 'post', $status = 'publi
       $sql .= "\n ORDER BY pm.meta_id DESC";
       $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
       }
-   
+   //echo $nl . $sql . $nl;
+         
    $sql = "
         SELECT pm.meta_value FROM {$wpdb->postmeta} pm
         LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
@@ -664,13 +668,23 @@ function noderunner_get_meta_values5( $post_id, $type = 'post', $status = 'publi
    $t = array();
    $cnt = 0;
    
+   //echo "R: " . $nl;
+   //print_r($r);
+
+   //echo "S: " . $nl;
+   //print_r($s);
+   //echo $nl;
+   
    foreach ($r as $rr)
       {
       //$t[$rr] = $s[$cnt];
-      $t[$rr] = $s[$cnt];
+      //echo "rr: " . $rr . " - s[cnt]: " . $s[$cnt] . $nl;
+      $t[$cnt] = $s[$cnt];
       $cnt++;
       }
-   
+      
+   //echo $nl . "T: " . $nl;
+   //print_r($t);
     return $t;
 }
 
