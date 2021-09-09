@@ -117,12 +117,14 @@ add_shortcode('noderunner_links_from_here','noderunner_links_from_here');
 function noderunner_links_from_here($atts,$content = null)
    {
    
+   
    global $nl;
-   $has_posts = have_posts();
+   $is_home = is_home();
    //$out .= "has_posts: " . $has_posts;
+
+ 
   
-  
-   if ( $has_posts )
+   if ( $is_home )
       {
       $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
       $post_id = $recent_posts[0]['ID'];
@@ -131,7 +133,7 @@ function noderunner_links_from_here($atts,$content = null)
       {
       $post_id = get_the_ID();
       }
-   $out .= "Post id: " . $post_id . $nl;
+   //$out .= "Post id: " . $post_id . $nl;
    
    
    
@@ -148,7 +150,7 @@ function noderunner_links_from_here($atts,$content = null)
       if ( !isset( $nr[$key] ) )
          {
          $nr[$key] = $value;
-         //$out .= $key . ": " . $value . $nl;
+         $out .= $key . " -> " . $value . $nl;
          }
       }
 
@@ -157,7 +159,7 @@ function noderunner_links_from_here($atts,$content = null)
      if ( !isset( $nr[$key] ) )
         {
         $nr[$key] = $value;
-        //$out .= $key . ": " . $value . $nl;
+        $out .= $key . " -> " . $value . $nl;
         }
      }
     
@@ -182,9 +184,9 @@ function noderunner_links_from_here($atts,$content = null)
          foreach ($nr as $key=>$value)
             {
             //$out .= "link to: " . $key . $nl;
-            $post = get_post($key, "object");
+            $post = get_post($value, "object");
             
-            $url = get_permalink($key);
+            $url = get_permalink($value);
             $out .= "<li><a href=\"" . $url . "\">";
             $out .= $post->post_title . $nl;
             $out .= "</a></li>";
@@ -218,10 +220,10 @@ function noderunner_links_to_here($atts,$content = null)
    //$this_post = get_the_ID();
    //$out .= "This post: " . $this_post . $nl;
    global $nl;
-   $has_posts = have_posts();
+   $is_home = is_home();
    //$out .= "has_posts: " . $has_posts . $nl;
    
-   if ( $has_posts )
+   if ( $is_home )
       {
       $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
       $this_post = $recent_posts[0]['ID'];
@@ -247,7 +249,7 @@ function noderunner_links_to_here($atts,$content = null)
       if ( !isset( $nr[$key] ) )
          {
          $nr[$key] = $value;
-         //$out .= $key . ": " . $value . $nl;
+         //$out .= $key . " -> " . $value . $nl;
          }
       }
 
@@ -256,10 +258,11 @@ function noderunner_links_to_here($atts,$content = null)
      if ( !isset( $nr[$key] ) )
         {
         $nr[$key] = $value;
-        //$out .= $key . ": " . $value . $nl;
+        //$out .= $key . " -> " . $value . $nl;
         }
      }
-    
+   
+   $out .= $nl;
    
    //$out .= "nr_merged: " . print_r($nr, true) . $nl;
    //$out .= "NR_ALL: " . print_r($nr_all, true) . $nl;
@@ -279,14 +282,18 @@ function noderunner_links_to_here($atts,$content = null)
    
    foreach ($nr as $key=>$value)
       {
-      //$out .= "link to: " . $key . $nl;
-      $post = get_post($value, "object");
+      //$out .= "link to: " . $value . $nl;
       //$out .= "key: " . $key . $nl;
       //$out .= "value: " . $value . $nl;
-      $url = get_permalink($value);
-      $out .= "<li><a href=\"" . $url . "\">";
-      $out .= $post->post_title . $nl;
-      $out .= "</a></li>";
+         
+      if ( $value == $this_post )
+         {
+         $post = get_post($key, "object");
+         $url = get_permalink($key);
+         $out .= "<li><a href=\"" . $url . "\">";
+         $out .= $post->post_title . $nl;
+         $out .= "</a></li>";
+         }
       }
    
    $out .= "</ul>";
@@ -354,10 +361,10 @@ height: 30px;
       //$out .= "This post: " . $this_post . $nl;
       
       
-      $has_posts = have_posts();
+      $is_home = is_home();
       //$out .= "has_posts: " . $has_posts . $nl;
       
-      if ( $has_posts )
+      if ( $is_home )
          {
          $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
          $this_post = $recent_posts[0]['ID'];
@@ -611,7 +618,7 @@ function noderunner_get_meta_values5( $post_id, $type = 'post', $status = 'publi
     //echo "IN HERE" . $nl;
     
     $sql = "
-        SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+        SELECT pm.post_id FROM {$wpdb->postmeta} pm
         LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
         WHERE pm.meta_key LIKE 'noderunner_%'
         AND p.post_status = %s 
@@ -630,7 +637,7 @@ function noderunner_get_meta_values5( $post_id, $type = 'post', $status = 'publi
       }
    
    $sql = "
-        SELECT pm.post_id FROM {$wpdb->postmeta} pm
+        SELECT pm.meta_value FROM {$wpdb->postmeta} pm
         LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
         WHERE pm.meta_key LIKE 'noderunner_%'
         AND p.post_status = %s 
@@ -679,7 +686,7 @@ function noderunner_get_meta_values6( $post_id, $type = 'post', $status = 'publi
     //echo "IN HERE" . $nl;
     
     $sql = "
-        SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+        SELECT pm.post_id FROM {$wpdb->postmeta} pm
         LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
         WHERE pm.meta_key LIKE 'noderunner_%'
         AND p.post_status = %s 
@@ -698,7 +705,7 @@ function noderunner_get_meta_values6( $post_id, $type = 'post', $status = 'publi
       }
    
    $sql = "
-        SELECT pm.post_id FROM {$wpdb->postmeta} pm
+        SELECT pm.meta_value FROM {$wpdb->postmeta} pm
         LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
         WHERE pm.meta_key LIKE 'noderunner_%'
         AND p.post_status = %s 
