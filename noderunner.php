@@ -133,7 +133,7 @@ function noderunner_links_from_here($atts,$content = null)
       {
       $post_id = get_the_ID();
       }
-   $out .= "Post id: " . $post_id . $nl;
+   //$out .= "Post id: " . $post_id . $nl;
    
    
    
@@ -154,14 +154,14 @@ function noderunner_links_from_here($atts,$content = null)
    foreach ( $nrpage as $key=>$value )
       {
       $nr[$cnt] = $value;
-      $out .= $key . " -> " . $value . $nl;
+      //$out .= $key . " -> " . $value . $nl;
       $cnt++;
       }
 
    foreach ( $nrpost as $key=>$value )
       {
       $nr[$cnt] = $value;
-      $out .= $key . " -> " . $value . $nl;
+      //$out .= $key . " -> " . $value . $nl;
       $cnt++;
       }
     
