@@ -118,7 +118,7 @@ function noderunner_links_from_here($atts,$content = null)
             $post = get_post($value, "object");
             
             $url = get_permalink($value);
-            $out .= "<li><a href=\"" . $url . "\">";
+            $out .= "<li style=\"font-size: 18px; line-height: 80%; \"><a href=\"" . $url . "\">";
             $out .= $post->post_title . $nl;
             $out .= "</a></li>";
             }
@@ -229,7 +229,7 @@ function noderunner_links_to_here($atts,$content = null)
          {
          $post = get_post($value, "object");
          $url = get_permalink($value);
-         $out .= "<li><a href=\"" . $url . "\">";
+         $out .= "<li style=\"font-size: 18px; line-height: 80%; \"><a href=\"" . $url . "\">";
          $out .= $post->post_title . $nl;
          $out .= "</a></li>";
          $done_the_thing = true;
@@ -303,7 +303,9 @@ function noderunner_create_a_link($atts,$content = null)
 aborder: 1px solid red;
 height: 30px;
 }
-   
+
+.nr-create-link-subtitle
+{ margin-bottom: 8px; }
 </style>";
    
     
@@ -375,10 +377,11 @@ height: 30px;
    
    
       
-      $out .= "Link from: ";
+      $out .= "<div class=\"nr-create-link-subtitle\">Link from: ";
       $out .= "<a href=\"#\" onclick=\"document.getElementById('nr_create_link_from').value=" . $this_post . "; return false;\">";
-      $out .= "[this page: " . $this_post . "]" . $nl;
+      $out .= "[ this page: " . $this_post . " ] or:" . $nl;
       $out .= "</a>";
+      $out .= "</div>";
       
       $args = array( 'numberposts' => 20 );
    
@@ -407,10 +410,11 @@ height: 30px;
       
       $out .= $nl . $nl;
       
-      $out .= "Link to: ";
+      $out .= "<div class=\"nr-create-link-subtitle\">Link to: ";
       $out .= "<a href=\"#\" onclick=\"document.getElementById('nr_create_link_to').value=" . $this_post . "; return false;\">";
-      $out .= "[this page: " . $this_post . "]";
+      $out .= "[ this page: " . $this_post . " ] or:";
       $out .= "</a>" . $nl;
+      $out .= "</div>";
       
       $args = array( 'numberposts' => 20 );
    
@@ -447,8 +451,10 @@ height: 30px;
       $out .= "</div>";
       $out .= "</form>";
       
-      $out .= "Post_id: " . $this_post . $nl;
+      //$out .= "Post_id: " . $this_post . $nl;
       $out .= $nl;
+      
+      $out .= "Create link to NEW page/post! Build super quickly." . $nl;
       //$out .= "So basically for now what we need is a pair of textboxes ";
       //$out .= "to say what page/post to link from/to. Then have dropdowns ";
       //$out .= "for posts, and pages (for the source), and then another ";
