@@ -454,7 +454,8 @@ height: 30px;
       //$out .= "Post_id: " . $this_post . $nl;
       $out .= $nl;
       
-      $out .= "Create link to NEW page/post! Build super quickly." . $nl;
+      $out .= "todo:<Br>- add 'Create link to NEW page/post'! Build page structure super quickly with few clicks.";
+      $out .= "set page title and maybe a standard message in the form" . $nl;
       //$out .= "So basically for now what we need is a pair of textboxes ";
       //$out .= "to say what page/post to link from/to. Then have dropdowns ";
       //$out .= "for posts, and pages (for the source), and then another ";
