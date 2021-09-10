@@ -41,77 +41,6 @@ $nl = "<br>";
  */
 
 
-add_shortcode('noderunner_write_test','noderunner_write_test');
-function noderunner_write_test($atts,$content = null)
-   {
-   global $nl;
-   $out = "IN NODERUNNER WRITE TEST" . $nl;
-   
-   $post_id = get_the_ID();
-   $out .= "Post id: " . $post_id . $nl;
-   
-   update_post_meta( $post_id, "noderunner", "noderunner_target_post_id" );
-   update_post_meta( 116, "noderunner", "noderunner_target_post_id2" );
-   update_post_meta( 2, "noderunner", "noderunner_target_post_id3" );
-   
-   update_post_meta( $post_id, "noderunner", "740" );
-   update_post_meta( $post_id, "noderunner_001", "some other post" );
-   update_post_meta( $post_id, "noderunner_002", "yet a diff post" );
-   
-   return do_shortcode($out);
-   }
-
-
-
-
-
-add_shortcode('noderunner_read_test','noderunner_read_test');
-function noderunner_read_test($atts,$content = null)
-   {
-   global $nl;
-   $out = "IN NODERUNNER READ TEST" . $nl;
-   
-   
-   $this_post = get_the_ID();
-   $out .= "This post: " . $this_post . $nl;
-   
-   $post_id = 737; // get_the_ID();
-   $out .= "Post id: " . $post_id . $nl;
-   
-   $nr = get_post_meta( $post_id, "noderunner" );
-   $out .= "Reading postmeta: " . print_r($nr, true) . $nl;
-   
-   
-   //$nr_all = noderunner_get_meta_values( 'noderunner', "page" );
-   
-   $nr_all = noderunner_get_meta_values( "noderunner", "page" );
-   
-   $out .= "NR_ALL: " . print_r($nr_all, true) . $nl;
-   $out .= implode( '<br />', $nr_all );
-   
-   $out .= $nl . $nl;
-   
-   $nr_all = noderunner_get_meta_values4( "noderunner", "page" );
-   
-   $out .= "NR_ALL: " . print_r($nr_all, true) . $nl;
-   //$out .= $nl . implode( '<br />', $nr_all );
-   $out .= $nl; 
-   
-   foreach ( $nr_all as $key=>$value )
-      {
-      $out .= "\"" . $key . "\" from post: " . $value . $nl;
-      }
-   
-   $out .= $nl;
-   $out .= "if this works then that should be a flat list of all noderunner links which we can iterate through quickly to find the reverse links too" . $nl;
-   $out .= $nl;
-
-      
-   return do_shortcode($out);
-   }
-
-
-
 
 add_shortcode('noderunner_links_from_here','noderunner_links_from_here');
 function noderunner_links_from_here($atts,$content = null)
@@ -135,7 +64,7 @@ function noderunner_links_from_here($atts,$content = null)
       }
    //$out .= "Post id: " . $post_id . $nl;
    
-   
+   //$out .= "add the is_home() check for feed/posts pages" . $nl;
    
    //$nr = get_post_meta( $post_id, "noderunner" );
    $nrpage = noderunner_get_meta_values5($post_id, "page");
@@ -202,12 +131,21 @@ function noderunner_links_from_here($atts,$content = null)
          }
       $out .= "<div style=\"text-align: right;\">";
       $out .= "<a href=\"#\" onclick=\"location.href='" . get_page_link() . "';\">";
-      $out .= "&circlearrowleft;";
+      $out .= "&circlearrowright;";
       $out .= "</a>";
       $out .= "</div>";
       }
    return do_Shortcode($out);
    }
+
+
+
+
+
+
+
+
+
 
 
 
@@ -228,11 +166,11 @@ function noderunner_links_to_here($atts,$content = null)
    if ( $is_home )
       {
       $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
-      $this_post = $recent_posts[0]['ID'];
+      $post_id = $recent_posts[0]['ID'];
       }
    else
       {
-      $this_post = get_the_ID();
+      $post_id = get_the_ID();
       }
    //$out .= "Post id: " . $this_post . $nl;
    
@@ -243,25 +181,23 @@ function noderunner_links_to_here($atts,$content = null)
    
    $nrpost = noderunner_get_meta_values6($post_id, "post");
    
-   //$out .= print_r($nrpost, true) . $nl;
+   //$out .= print_r($nrpage, true) . $nl;
    $nr = array();
+   
+   $cnt = 0;
    
    foreach ( $nrpage as $key=>$value )
       {
-      if ( !isset( $nr[$key] ) )
-         {
-         $nr[$key] = $value;
-         //$out .= $key . " -> " . $value . $nl;
-         }
+      $nr[$cnt] = $value;
+      //$out .= $key . " -> " . $value . $nl;
+      $cnt++;
       }
 
    foreach ( $nrpost as $key=>$value )
      {
-     if ( !isset( $nr[$key] ) )
-        {
-        $nr[$key] = $value;
-        //$out .= $key . " -> " . $value . $nl;
-        }
+     $nr[$cnt] = $value;
+     //$out .= $key . " -> " . $value . $nl;
+     $cnt++;
      }
    
    $out .= $nl;
@@ -289,10 +225,10 @@ function noderunner_links_to_here($atts,$content = null)
       //$out .= "key: " . $key . $nl;
       //$out .= "value: " . $value . $nl;
          
-      if ( $value == $this_post )
+      if ( 1==1 )
          {
-         $post = get_post($key, "object");
-         $url = get_permalink($key);
+         $post = get_post($value, "object");
+         $url = get_permalink($value);
          $out .= "<li><a href=\"" . $url . "\">";
          $out .= $post->post_title . $nl;
          $out .= "</a></li>";
@@ -309,12 +245,16 @@ function noderunner_links_to_here($atts,$content = null)
 
    $out .= "<div style=\"text-align: right;\">";
    $out .= "<a href=\"#\" onclick=\"location.href='" . get_page_link() . "';\">";
-   $out .= "&circlearrowleft;";
+   $out .= "&circlearrowright;";
    $out .= "</a>";
    $out .= "</div>";
    
    return do_Shortcode($out);
    }
+
+
+
+
 
 
 
@@ -333,6 +273,13 @@ function nr_user_has_role($user_id, $role_or_cap) {
        }
  }   
    
+
+
+
+
+
+
+
 
 
 
@@ -500,7 +447,7 @@ height: 30px;
       $out .= "</div>";
       $out .= "</form>";
       
-      
+      $out .= "Post_id: " . $this_post . $nl;
       $out .= $nl;
       //$out .= "So basically for now what we need is a pair of textboxes ";
       //$out .= "to say what page/post to link from/to. Then have dropdowns ";
@@ -515,6 +462,231 @@ height: 30px;
       }
    return do_Shortcode($out);
    }
+
+
+
+
+
+
+
+
+
+
+
+
+function noderunner_get_meta_values5( $post_id, $type = 'post', $status = 'publish' ) {
+
+    global $wpdb;
+    global $nl;
+    
+    
+    //echo "IN HERE" . $nl;
+    //echo "POST ID: " . $post_id . $nl;
+    
+    $sql = "
+        SELECT pm.post_id FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+        WHERE pm.meta_key LIKE 'noderunner_%'
+        AND p.post_status = %s 
+        AND p.post_type = %s
+    ";
+    if ( strval($post_id) <> "" && is_numeric($post_id) )
+      {
+      $sql .= "\n AND pm.post_id = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
+      }
+   else
+      {
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
+      }
+   //echo $nl . $sql . $nl;
+         
+   $sql = "
+        SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+        WHERE pm.meta_key LIKE 'noderunner_%'
+        AND p.post_status = %s 
+        AND p.post_type = %s
+    ";
+    
+   if ( strval($post_id) <> "" && is_numeric($post_id) )
+      {
+      $sql .= "\n AND pm.post_id = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
+      }
+   else
+      {
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
+      }
+   
+   // old like nwas LIKE: WHERE pm.meta_key LIKE 'noderunner%'  << note extra %
+   // but we're just matching on 'noderunner' now so doesn't need it
+   
+   $t = array();
+   $cnt = 0;
+   
+   //echo "R: " . $nl;
+   //print_r($r);
+
+   //echo "S: " . $nl;
+   //print_r($s);
+   //echo $nl;
+   
+   foreach ($r as $rr)
+      {
+      //$t[$rr] = $s[$cnt];
+      //echo "rr: " . $rr . " - s[cnt]: " . $s[$cnt] . $nl;
+      $t[$cnt] = $s[$cnt];
+      $cnt++;
+      }
+      
+   //echo $nl . "T: " . $nl;
+   //print_r($t);
+    return $t;
+}
+
+
+
+
+
+
+
+
+function noderunner_get_meta_values6( $post_id, $type = 'post', $status = 'publish' ) {
+
+    global $wpdb;
+    global $nl;
+    
+    
+    //echo "IN HERE" . $nl;
+    //echo "post_id: " .  $post_id . $nl;
+    
+    $sql = "
+        SELECT pm.post_id FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+        WHERE pm.meta_key LIKE 'noderunner_%'";
+    
+    if ( strval($post_id) <> "" && is_numeric($post_id) )
+      {
+      $sql .= "\n AND p.post_status = %s"; 
+      $sql .= "\n AND p.post_type = %s";
+      $sql .= "\n AND pm.meta_value = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
+      }
+   else
+      {
+      $sql .= "\n AND p.post_status = %s"; 
+      $sql .= "\n AND p.post_type = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
+      }
+   
+   //print_r($sql);
+   //echo $nl;
+   //
+   //$sql = "
+   //     SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+   //     LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+   //     WHERE pm.meta_key LIKE 'noderunner_%'
+   //     AND p.post_status = %s 
+   //     AND p.post_type = %s
+   // ";
+   // 
+   //if ( strval($post_id) <> "" && is_numeric($post_id) )
+   //   {
+   //   $sql .= "\n AND pm.meta_value = %s";
+   //   $sql .= "\n ORDER BY pm.meta_id DESC";
+   //   $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
+   //   }
+   //else
+   //   {
+   //   $sql .= "\n ORDER BY pm.meta_id DESC";
+   //   $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
+   //   }
+   
+   // old like nwas LIKE: WHERE pm.meta_key LIKE 'noderunner%'  << note extra %
+   // but we're just matching on 'noderunner' now so doesn't need it
+   //echo "R (get_meta_values6):" . $nl;
+   //print_r($r);
+   //echo $nl;
+   
+   //echo "S:" . $nl;
+   //print_r($s);
+   //echo $nl;
+   
+   //$t = array();
+   //$cnt = 0;
+   //
+   //foreach ($r as $rr)
+   //   {
+   //   //$t[$rr] = $s[$cnt];
+   //   $t[$cnt] = $s[$cnt];
+   //   $cnt++;
+   //   }
+   //
+   //echo $nl;
+   //print_r($t);
+   //echo $nl;
+   
+   return $r;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -613,152 +785,6 @@ function noderunner_get_meta_values4( $key = '', $type = 'post', $status = 'publ
 
 
 
-function noderunner_get_meta_values5( $post_id, $type = 'post', $status = 'publish' ) {
-
-    global $wpdb;
-    global $nl;
-    
-    
-    //echo "IN HERE" . $nl;
-    //echo "POST ID: " . $post_id . $nl;
-    
-    $sql = "
-        SELECT pm.post_id FROM {$wpdb->postmeta} pm
-        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-        WHERE pm.meta_key LIKE 'noderunner_%'
-        AND p.post_status = %s 
-        AND p.post_type = %s
-    ";
-    if ( strval($post_id) <> "" && is_numeric($post_id) )
-      {
-      $sql .= "\n AND pm.post_id = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
-      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
-      }
-   else
-      {
-      $sql .= "\n ORDER BY pm.meta_id DESC";
-      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
-      }
-   //echo $nl . $sql . $nl;
-         
-   $sql = "
-        SELECT pm.meta_value FROM {$wpdb->postmeta} pm
-        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-        WHERE pm.meta_key LIKE 'noderunner_%'
-        AND p.post_status = %s 
-        AND p.post_type = %s
-    ";
-    
-   if ( strval($post_id) <> "" && is_numeric($post_id) )
-      {
-      $sql .= "\n AND pm.post_id = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
-      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
-      }
-   else
-      {
-      $sql .= "\n ORDER BY pm.meta_id DESC";
-      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
-      }
-   
-   // old like nwas LIKE: WHERE pm.meta_key LIKE 'noderunner%'  << note extra %
-   // but we're just matching on 'noderunner' now so doesn't need it
-   
-   $t = array();
-   $cnt = 0;
-   
-   //echo "R: " . $nl;
-   //print_r($r);
-
-   //echo "S: " . $nl;
-   //print_r($s);
-   //echo $nl;
-   
-   foreach ($r as $rr)
-      {
-      //$t[$rr] = $s[$cnt];
-      //echo "rr: " . $rr . " - s[cnt]: " . $s[$cnt] . $nl;
-      $t[$cnt] = $s[$cnt];
-      $cnt++;
-      }
-      
-   //echo $nl . "T: " . $nl;
-   //print_r($t);
-    return $t;
-}
-
-
-
-
-
-
-function noderunner_get_meta_values6( $post_id, $type = 'post', $status = 'publish' ) {
-
-    global $wpdb;
-    global $nl;
-    
-    
-    //echo "IN HERE" . $nl;
-    
-    $sql = "
-        SELECT pm.post_id FROM {$wpdb->postmeta} pm
-        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-        WHERE pm.meta_key LIKE 'noderunner_%'
-        AND p.post_status = %s 
-        AND p.post_type = %s
-    ";
-    if ( strval($post_id) <> "" && is_numeric($post_id) )
-      {
-      $sql .= "\n AND pm.meta_value = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
-      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
-      }
-   else
-      {
-      $sql .= "\n ORDER BY pm.meta_id DESC";
-      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
-      }
-   
-   $sql = "
-        SELECT pm.meta_value FROM {$wpdb->postmeta} pm
-        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-        WHERE pm.meta_key LIKE 'noderunner_%'
-        AND p.post_status = %s 
-        AND p.post_type = %s
-    ";
-    
-   if ( strval($post_id) <> "" && is_numeric($post_id) )
-      {
-      $sql .= "\n AND pm.meta_value = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
-      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
-      }
-   else
-      {
-      $sql .= "\n ORDER BY pm.meta_id DESC";
-      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
-      }
-   
-   // old like nwas LIKE: WHERE pm.meta_key LIKE 'noderunner%'  << note extra %
-   // but we're just matching on 'noderunner' now so doesn't need it
-   
-   $t = array();
-   $cnt = 0;
-   
-   foreach ($r as $rr)
-      {
-      //$t[$rr] = $s[$cnt];
-      $t[$rr] = $s[$cnt];
-      $cnt++;
-      }
-   
-    return $t;
-}
-
-
-
-
 
 
 
@@ -804,10 +830,74 @@ function noderunner_get_meta_values( $key = '', $type = 'post', $status = 'publi
 
 
 
+add_shortcode('noderunner_write_test','noderunner_write_test');
+function noderunner_write_test($atts,$content = null)
+   {
+   global $nl;
+   $out = "IN NODERUNNER WRITE TEST" . $nl;
+   
+   $post_id = get_the_ID();
+   $out .= "Post id: " . $post_id . $nl;
+   
+   update_post_meta( $post_id, "noderunner", "noderunner_target_post_id" );
+   update_post_meta( 116, "noderunner", "noderunner_target_post_id2" );
+   update_post_meta( 2, "noderunner", "noderunner_target_post_id3" );
+   
+   update_post_meta( $post_id, "noderunner", "740" );
+   update_post_meta( $post_id, "noderunner_001", "some other post" );
+   update_post_meta( $post_id, "noderunner_002", "yet a diff post" );
+   
+   return do_shortcode($out);
+   }
 
 
 
 
+
+add_shortcode('noderunner_read_test','noderunner_read_test');
+function noderunner_read_test($atts,$content = null)
+   {
+   global $nl;
+   $out = "IN NODERUNNER READ TEST" . $nl;
+   
+   
+   $this_post = get_the_ID();
+   $out .= "This post: " . $this_post . $nl;
+   
+   $post_id = 737; // get_the_ID();
+   $out .= "Post id: " . $post_id . $nl;
+   
+   $nr = get_post_meta( $post_id, "noderunner" );
+   $out .= "Reading postmeta: " . print_r($nr, true) . $nl;
+   
+   
+   //$nr_all = noderunner_get_meta_values( 'noderunner', "page" );
+   
+   $nr_all = noderunner_get_meta_values( "noderunner", "page" );
+   
+   $out .= "NR_ALL: " . print_r($nr_all, true) . $nl;
+   $out .= implode( '<br />', $nr_all );
+   
+   $out .= $nl . $nl;
+   
+   $nr_all = noderunner_get_meta_values4( "noderunner", "page" );
+   
+   $out .= "NR_ALL: " . print_r($nr_all, true) . $nl;
+   //$out .= $nl . implode( '<br />', $nr_all );
+   $out .= $nl; 
+   
+   foreach ( $nr_all as $key=>$value )
+      {
+      $out .= "\"" . $key . "\" from post: " . $value . $nl;
+      }
+   
+   $out .= $nl;
+   $out .= "if this works then that should be a flat list of all noderunner links which we can iterate through quickly to find the reverse links too" . $nl;
+   $out .= $nl;
+
+      
+   return do_shortcode($out);
+   }
 
 
 
