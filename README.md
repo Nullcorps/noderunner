@@ -29,7 +29,7 @@ download or clone the code into: /wp-content/plugins/
 
 so then it would be like: /wp-content/plugins/noderunner/
 
-you should see it in th eplugin list, activate it.
+you should see it in the plugin list, activate it.
 
 To use it you need to put the links somewhere. These can be in a sidebar (e.g. they'd be the main page links) or perhaps in a widget/footer as a "you may also be intersted in..." type thing to catch a user about to leave.
 
