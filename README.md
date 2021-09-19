@@ -60,6 +60,8 @@ Actually no. tags/categories aggregate results. so you search on /tag/bibbedy an
 TODO LIST:
 ------------------------------------------------------------------------
 
+- add deleting links too
+
 - make it so that you can not only create a link "in page" but also a new page. So then you could start off with just a home page and map out an entire site really quickly without having to navigate away from your current screen. Fill in subject and brief body data right there in the widget and can then navigate to that new page from your current page (or not if just mapping out a structure).
 
 - remove any inline css
