@@ -36,22 +36,12 @@ To use it you need to put the links somewhere. These can be in a sidebar (e.g. t
 To put the links add the following shortcodes to a sidebar, footer widget or wherever you want to use them:
 
 [noderunner_links_from_here]
+
 [noderunner_links_to_here]
+
 [noderunner_create_a_link]
 
 Or if you switch to the code editor in wordpress you can put all 3 in a single block and then use a plugin like widget contex to hide the noderunner links on key pages (e.g home page, cart/checkout etc) by url filter (or whatever you choose):
-
-<!-- wp:paragraph -->
-<p> [noderunner_links_from_here] </p>
-<!-- /wp:paragraph -->
-<!-- wp:paragraph -->
-<p> [noderunner_links_to_here]</p>
-<!-- /wp:paragraph -->
-<!-- wp:paragraph -->
-<p> [noderunner_create_a_link]  </p>
-<!-- /wp:paragraph -->
-
-
 
 Then you can us the create_a_link widget to make a link from any page/post to any other page/post, and those links will be able to be followed in both directions... so if you set up a 'home' page and a 'topic1' page, you only need to make a link from home to topic1 since the link back to home (when on the topic1 page) will be there automatically as an "upstream" link.
 
