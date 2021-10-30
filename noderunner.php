@@ -67,12 +67,13 @@ function noderunner_links_from_here($atts,$content = null)
    //$out .= "add the is_home() check for feed/posts pages" . $nl;
    
    //$nr = get_post_meta( $post_id, "noderunner" );
-   $nrpage = noderunner_get_meta_values5($post_id, "page");
+   $nrpage = noderunner_get_meta_values5a($post_id, "page");
    
-   $nrpost = noderunner_get_meta_values5($post_id, "post");
+   $nrpost = noderunner_get_meta_values5a($post_id, "post");
+   
+   //$out .= "NRPAGE:" . $nl . print_r($nrpage, true) . $nl;
    
    //$out .= "NRPOST:" . $nl . print_r($nrpost, true) . $nl;
-   //$out .= "NRPAGE:" . $nl . print_r($nrpost, true) . $nl;
    
    
    
@@ -82,21 +83,24 @@ function noderunner_links_from_here($atts,$content = null)
    
    foreach ( $nrpage as $key=>$value )
       {
-      $nr[$cnt] = $value;
+      //$nr[$cnt] = $value;
+      $nr[$key] = $value;
       //$out .= $key . " -> " . $value . $nl;
       $cnt++;
       }
 
    foreach ( $nrpost as $key=>$value )
       {
-      $nr[$cnt] = $value;
+      //$nr[$cnt] = $value;
+      $nr[$key] = $value;
       //$out .= $key . " -> " . $value . $nl;
       $cnt++;
       }
     
    
    //$nr = $nrpost;
-   
+   $user_id = get_current_user_id();
+   $is_admin = nr_user_has_role($user_id, "administrator");
    
    //$nr = $nrpost;
    //$out .= "Reading postmeta: " . print_r($nr, true) . $nl;
@@ -114,13 +118,20 @@ function noderunner_links_from_here($atts,$content = null)
          
          foreach ($nr as $key=>$value)
             {
-            //$out .= "link to: " . $key . $nl;
+            //$out .= "link to: " . $key . " => " . $value . $nl;
             $post = get_post($value, "object");
             
             $url = get_permalink($value);
             $out .= "<li style=\"font-size: 18px; line-height: 80%; \"><a href=\"" . $url . "\">";
-            $out .= $post->post_title . $nl;
-            $out .= "</a></li>";
+            $out .= $post->post_title;
+            $out .= "</a>";
+            
+            if ( $is_admin )
+               {
+               $out .= " <a href=\"?key=" . $key . "&post=" . $post_id . "\" style=\"font-size: 12px;\">&#10060;</a>";
+               }
+            
+            $out .= "</li>";
             }
          
          $out .= "</ul>";
@@ -163,6 +174,10 @@ function noderunner_links_to_here($atts,$content = null)
    $is_home = is_home();
    //$out .= "has_posts: " . $has_posts . $nl;
    
+   $user_id = get_current_user_id();
+   $is_admin = nr_user_has_role($user_id, "administrator");
+   
+   
    if ( $is_home )
       {
       $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
@@ -177,9 +192,9 @@ function noderunner_links_to_here($atts,$content = null)
    
    //$nr = noderunner_get_meta_values6( $this_post, "page" );
    
-   $nrpage = noderunner_get_meta_values6($post_id, "page");
+   $nrpage = noderunner_get_meta_values6a($post_id, "page");
    
-   $nrpost = noderunner_get_meta_values6($post_id, "post");
+   $nrpost = noderunner_get_meta_values6a($post_id, "post");
    
    //$out .= print_r($nrpage, true) . $nl;
    $nr = array();
@@ -188,14 +203,14 @@ function noderunner_links_to_here($atts,$content = null)
    
    foreach ( $nrpage as $key=>$value )
       {
-      $nr[$cnt] = $value;
+      $nr[$key] = $value;
       //$out .= $key . " -> " . $value . $nl;
       $cnt++;
       }
 
    foreach ( $nrpost as $key=>$value )
      {
-     $nr[$cnt] = $value;
+     $nr[$key] = $value;
      //$out .= $key . " -> " . $value . $nl;
      $cnt++;
      }
@@ -230,8 +245,14 @@ function noderunner_links_to_here($atts,$content = null)
          $post = get_post($value, "object");
          $url = get_permalink($value);
          $out .= "<li style=\"font-size: 18px; line-height: 80%; \"><a href=\"" . $url . "\">";
-         $out .= $post->post_title . $nl;
-         $out .= "</a></li>";
+         $out .= $post->post_title;
+         $out .= "</a>";
+         if ( $is_admin )
+            {
+            $out .= " <a href=\"?key=" . $key . "&post=" . $value . "\" style=\"font-size: 12px;\">&#10060;</a>";
+            }
+            
+         $out .= "</li>";
          $done_the_thing = true;
          }
       }
@@ -307,8 +328,21 @@ height: 30px;
 .nr-create-link-subtitle
 { margin-bottom: 8px; }
 </style>";
+      
+      $out .= "Admin" . $nl;
+      if ( isset($_GET['key']) && isset($_GET['post']) )
+         {
+         $key = sanitize_text_field($_GET['key']);
+         $post = sanitize_text_field($_GET['post']);
+         
+         if ( strval($key) <> "" && strval($post) <> "" )
+            {
+            $del = delete_post_meta( $post, $key );
+            //$out .= "Deleted: " . $del . $nl;
+            }
+         }
+      
    
-    
       $out .= "<h4>Noderunner create a link:</h4>";
       //$this_post = get_the_ID();
       //$out .= "This post: " . $this_post . $nl;
@@ -561,6 +595,85 @@ function noderunner_get_meta_values5( $post_id, $type = 'post', $status = 'publi
 
 
 
+function noderunner_get_meta_values5a( $post_id, $type = 'post', $status = 'publish' ) {
+
+    global $wpdb;
+    global $nl;
+    
+    
+    //echo "IN HERE" . $nl;
+    //echo "POST ID: " . $post_id . $nl;
+    
+    $sql = "
+        SELECT pm.meta_key FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+        WHERE pm.meta_key LIKE 'noderunner_%'
+        AND p.post_status = %s 
+        AND p.post_type = %s
+    ";
+    if ( strval($post_id) <> "" && is_numeric($post_id) )
+      {
+      $sql .= "\n AND pm.post_id = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
+      }
+   else
+      {
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
+      }
+   //echo $nl . $sql . $nl;
+         
+   $sql = "
+        SELECT pm.meta_value FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+        WHERE pm.meta_key LIKE 'noderunner_%'
+        AND p.post_status = %s 
+        AND p.post_type = %s
+    ";
+    
+   if ( strval($post_id) <> "" && is_numeric($post_id) )
+      {
+      $sql .= "\n AND pm.post_id = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
+      }
+   else
+      {
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
+      }
+   
+   // old like nwas LIKE: WHERE pm.meta_key LIKE 'noderunner%'  << note extra %
+   // but we're just matching on 'noderunner' now so doesn't need it
+   
+   $t = array();
+   $cnt = 0;
+   
+   //echo "R: " . $nl;
+   //print_r($r);
+
+   //echo "S: " . $nl;
+   //print_r($s);
+   //echo $nl;
+   
+   foreach ($r as $rr)
+      {
+      //$t[$rr] = $s[$cnt];
+      //echo "rr: " . $rr . " - s[cnt]: " . $s[$cnt] . $nl;
+      //$t[$cnt] = $s[$cnt];
+      $t[$rr] = $s[$cnt];
+      $cnt++;
+      }
+      
+   //echo $nl . "T: " . $nl;
+   //print_r($t);
+    return $t;
+}
+
+
+
+
 
 
 function noderunner_get_meta_values6( $post_id, $type = 'post', $status = 'publish' ) {
@@ -643,6 +756,91 @@ function noderunner_get_meta_values6( $post_id, $type = 'post', $status = 'publi
    return $r;
 }
 
+
+
+
+
+function noderunner_get_meta_values6a( $post_id, $type = 'post', $status = 'publish' ) {
+
+    global $wpdb;
+    global $nl;
+    
+    
+    //echo "IN HERE" . $nl;
+    //echo "post_id: " .  $post_id . $nl;
+    
+    $sql = "
+        SELECT pm.post_id FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+        WHERE pm.meta_key LIKE 'noderunner_%'";
+    
+    if ( strval($post_id) <> "" && is_numeric($post_id) )
+      {
+      $sql .= "\n AND p.post_status = %s"; 
+      $sql .= "\n AND p.post_type = %s";
+      $sql .= "\n AND pm.meta_value = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
+      }
+   else
+      {
+      $sql .= "\n AND p.post_status = %s"; 
+      $sql .= "\n AND p.post_type = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
+      }
+   
+   //print_r($sql);
+   //echo $nl;
+   
+   $sql = "
+        SELECT pm.meta_key FROM {$wpdb->postmeta} pm
+        LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+        WHERE pm.meta_key LIKE 'noderunner_%'
+        AND p.post_status = %s 
+        AND p.post_type = %s
+    ";
+    
+   if ( strval($post_id) <> "" && is_numeric($post_id) )
+      {
+      $sql .= "\n AND pm.meta_value = %s";
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
+      }
+   else
+      {
+      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
+      }
+   
+   // old like nwas LIKE: WHERE pm.meta_key LIKE 'noderunner%'  << note extra %
+   // but we're just matching on 'noderunner' now so doesn't need it
+   //echo "R (get_meta_values6):" . $nl;
+   //print_r($r);
+   //echo $nl;
+   
+   //echo "S:" . $nl;
+   //print_r($s);
+   //echo $nl;
+   
+   $t = array();
+   $cnt = 0;
+   
+   foreach ($r as $rr)
+      {
+      //$t[$rr] = $s[$cnt];
+      
+      //$t[$rr] = $s[$cnt];
+      $t[$s[$cnt]] = $rr;
+      $cnt++;
+      }
+   
+  // echo $nl;
+   //print_r($t);
+   //echo $nl;
+   
+   return $t;
+}
 
 
 
