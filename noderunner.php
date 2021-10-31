@@ -329,18 +329,7 @@ height: 30px;
 { margin-bottom: 8px; }
 </style>";
       
-      $out .= "Admin" . $nl;
-      if ( isset($_GET['key']) && isset($_GET['post']) )
-         {
-         $key = sanitize_text_field($_GET['key']);
-         $post = sanitize_text_field($_GET['post']);
-         
-         if ( strval($key) <> "" && strval($post) <> "" )
-            {
-            $del = delete_post_meta( $post, $key );
-            //$out .= "Deleted: " . $del . $nl;
-            }
-         }
+
       
    
       $out .= "<h4>Noderunner create a link:</h4>";
@@ -361,6 +350,25 @@ height: 30px;
          $this_post = get_the_ID();
          }
       //$out .= "Post id: " . $this_post . $nl;
+    
+    
+    
+          //$out .= "Admin" . $nl;
+      if ( isset($_GET['key']) && isset($_GET['post']) )
+         {
+         $key = sanitize_text_field($_GET['key']);
+         $post = sanitize_text_field($_GET['post']);
+         
+         if ( strval($key) <> "" && strval($post) <> "" )
+            {
+            $del = delete_post_meta( $post, $key );
+            //$out .= "Deleted: " . $del . $nl;
+            //$out .= "Reload this post: " . $this_post . $nl;
+            $pl = get_permalink($this_post);
+            //$out .= "Permalink: " . $pl . $nl;
+            $out .= "<script language=javascript>location.href='" . $pl . "';</script>";
+            }
+         }
     
     
       $link_from = "";
@@ -404,6 +412,9 @@ height: 30px;
             $rand = substr($rand,4,10);
             //echo "RAND: " . $rand . $nl;
             update_post_meta( $link_from, "noderunner_" . $rand, $link_to );
+            $pl = get_permalink($this_post);
+            //$out .= "Permalink: " . $pl . $nl;
+            $out .= "<script language=javascript>location.href='" . $pl . "';</script>";
             }
          }
       
