@@ -23,6 +23,101 @@ ini_set('display_startup_errors', 1);
 
 $nl = "<br>";
 
+$noderunner_home_id    = get_option( 'noderunner_home_id' );
+
+
+
+
+
+// =============== ADMIN PAGE STUFF
+
+if ( is_admin() )
+   {  // admin actions
+   //add_action( 'admin_menu', 'add_mymenu' );
+   //add_options_page( 'P8-Statto', 'P8-Statto', 'administrator', 'P8-statto/settings.php', 'statto_admin_page', 'dashicons-tickets', 6  );
+   add_action( 'admin_menu', 'woo_member_admin_menu' );
+   add_action( 'admin_init', 'woo_member_register_settings' );
+   }
+   else
+   {
+   // non-admin enqueues, actions, and filters
+   }
+
+function woo_member_register_settings() { // whitelist options
+  register_setting( 'Noderunner', 'noderunner_home_id' );  
+}
+
+//add_action( 'admin_menu', 'botfink_admin_menu' );
+
+function woo_member_admin_menu() {
+	// add_menu_page( 'My Top Level Menu Example', 'P8-Botfink', 'manage_options', 'myplugin/myplugin-admin-page.php', 'botfink_admin_page', 'dashicons-tickets', 6  );
+   add_options_page( 'Noderunner', 'Noderunner', 'administrator', 'Noderunner/admin-page.php', 'noderunner_admin_page', 'dashicons-tickets', 6  );
+}
+
+
+
+
+
+
+
+
+function noderunner_admin_page(){
+   global $nl;
+
+	?>
+	<div class="wrap">
+		<h2>WooCommerce membership by role configuration</h2>
+
+
+		<form method="post" action="options.php">
+		<?php
+		settings_fields( 'Noderunner' );
+		do_settings_sections( 'Noderunner' );
+		//add_settings_field( $id, $title, $callback, $page, $section, $args );
+		?>
+		  <table class="form-table" border=0>
+
+        <tr valign="top">
+        <th scope="row">Noderunner "Home" id:</th>
+        <td><input type="text" size=50 name="noderunner_home_id" value="<?php echo esc_attr( get_option('noderunner_home_id') ); ?>" /><br>
+        ID of the page or post which should be the "starting node" for Noderunner, and should be displayed on the home/feed page.
+        </td>
+        </tr>
+    </table>
+		<?php submit_button(); ?>
+      </form>
+	</div>
+	<?php
+
+   echo "noderunner_home_id: "              . get_option( 'noderunner_home_id' )  . $nl;
+
+   
+   
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -45,9 +140,9 @@ $nl = "<br>";
 add_shortcode('noderunner_links_from_here','noderunner_links_from_here');
 function noderunner_links_from_here($atts,$content = null)
    {
-   
-   
    global $nl;
+   global $noderunner_home_id;
+   
    $is_home = is_home();
    //$out .= "has_posts: " . $has_posts;
 
@@ -55,8 +150,9 @@ function noderunner_links_from_here($atts,$content = null)
   
    if ( $is_home )
       {
-      $recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
-      $post_id = $recent_posts[0]['ID'];
+      //$recent_posts = wp_get_recent_posts( array( 'numberposts' => '1' ) );
+      //$post_id = $recent_posts[0]['ID'];
+      $post_id = $noderunner_home_id; 
       }
    else
       {
@@ -123,7 +219,7 @@ function noderunner_links_from_here($atts,$content = null)
             $post = get_post($value, "object");
             
             $url = get_permalink($value);
-            $out .= "<li style=\"font-size: 18px; line-height: 80%; \"><a href=\"" . $url . "\">";
+            $out .= "<li style=\"font-size: 18px; line-height: 140%; \"><a href=\"" . $url . "\">";
             $out .= $post->post_title;
             $out .= "</a>";
             
@@ -248,7 +344,7 @@ function noderunner_links_to_here($atts,$content = null)
          {
          $post = get_post($value, "object");
          $url = get_permalink($value);
-         $out .= "<li style=\"font-size: 18px; line-height: 80%; \"><a href=\"" . $url . "\">";
+         $out .= "<li style=\"font-size: 18px; line-height: 140%; \"><a href=\"" . $url . "\">";
          $out .= $post->post_title;
          $out .= "</a>";
          if ( $is_admin )
