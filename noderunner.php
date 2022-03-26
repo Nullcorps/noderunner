@@ -730,12 +730,12 @@ function noderunner_get_meta_values5a( $post_id, $type = 'post', $status = 'publ
     if ( strval($post_id) <> "" && is_numeric($post_id) )
       {
       $sql .= "\n AND pm.post_id = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $sql .= "\n ORDER BY pm.meta_id ASC";
       $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
       }
    else
       {
-      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $sql .= "\n ORDER BY pm.meta_id ASC";
       $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
       }
    //echo $nl . $sql . $nl;
@@ -751,12 +751,12 @@ function noderunner_get_meta_values5a( $post_id, $type = 'post', $status = 'publ
    if ( strval($post_id) <> "" && is_numeric($post_id) )
       {
       $sql .= "\n AND pm.post_id = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $sql .= "\n ORDER BY pm.meta_id ASC";
       $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
       }
    else
       {
-      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $sql .= "\n ORDER BY pm.meta_id ASC";
       $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
       }
    
@@ -895,14 +895,14 @@ function noderunner_get_meta_values6a( $post_id, $type = 'post', $status = 'publ
       $sql .= "\n AND p.post_status = %s"; 
       $sql .= "\n AND p.post_type = %s";
       $sql .= "\n AND pm.meta_value = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $sql .= "\n ORDER BY pm.meta_id ASC";
       $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
       }
    else
       {
       $sql .= "\n AND p.post_status = %s"; 
       $sql .= "\n AND p.post_type = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $sql .= "\n ORDER BY pm.meta_id ASC";
       $r = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
       }
    
@@ -920,12 +920,12 @@ function noderunner_get_meta_values6a( $post_id, $type = 'post', $status = 'publ
    if ( strval($post_id) <> "" && is_numeric($post_id) )
       {
       $sql .= "\n AND pm.meta_value = %s";
-      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $sql .= "\n ORDER BY pm.meta_id ASC";
       $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type, $post_id ) );
       }
    else
       {
-      $sql .= "\n ORDER BY pm.meta_id DESC";
+      $sql .= "\n ORDER BY pm.meta_id ASC";
       $s = $wpdb->get_col( $wpdb->prepare( $sql, $status, $type ) );
       }
    
